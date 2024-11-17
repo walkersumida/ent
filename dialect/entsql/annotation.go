@@ -596,6 +596,9 @@ type IndexAnnotation struct {
 	//		)
 	//	CREATE INDEX "table_a" ON "table"("a") WHERE (b AND c > 0)
 	Where string
+
+	// NULLS NOT DISTINCT
+	NullsNotDistinct bool
 }
 
 // Prefix returns a new index annotation with a single string column index.
@@ -751,6 +754,12 @@ func IndexWhere(pred string) *IndexAnnotation {
 	return &IndexAnnotation{Where: pred}
 }
 
+func NullsNotDistinct(n bool) *IndexAnnotation {
+	return &IndexAnnotation{
+		NullsNotDistinct: n,
+	}
+}
+
 // Name describes the annotation name.
 func (IndexAnnotation) Name() string {
 	return "EntSQLIndexes"
@@ -818,6 +827,9 @@ func (a IndexAnnotation) Merge(other schema.Annotation) schema.Annotation {
 	}
 	if ant.Where != "" {
 		a.Where = ant.Where
+	}
+	if ant.NullsNotDistinct {
+		a.NullsNotDistinct = ant.NullsNotDistinct
 	}
 	return a
 }
